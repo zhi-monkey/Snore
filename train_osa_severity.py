@@ -131,8 +131,9 @@ def main():
     valid_loader = DataLoader(valid_data, batch_size=batch_size, shuffle=False, num_workers=nw)
 
     # ── 模型 ──────────────────────────────────────────────────────────────────
-    # 修改点：in_channels=4（PSG 通道数），classes=4（OSA 严重程度）
-    net = ResNet50(in_channels=IN_CHANNELS, classes=NUM_CLASSES).to(device)
+    # 修改点：in_channels=4（PSG 通道数），classes=4（OSA 严重程度），
+    #          dropout=0.5 防止在有限医疗数据上过拟合
+    net = ResNet50(in_channels=IN_CHANNELS, classes=NUM_CLASSES, dropout=0.5).to(device)
     net_name    = net.__class__.__name__
     folder_name = 'osa_severity/' + net_name
     os.makedirs(folder_name, exist_ok=True)

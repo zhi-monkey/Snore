@@ -1,17 +1,35 @@
 """
-ResNet50 (1D) — 睡眠体位分类模型
+ResNet50 (1D) — 一维残差网络，支持睡眠体位分类与 OSA 严重程度分类两种任务。
 
-输入数据：患者的鼾声/呼吸音频一维时序信号，形状为 (batch, in_channels, seq_len)。
-预测任务：多分类，将输入信号分类为 6 种睡眠体位：
-    0 - up        仰卧
-    1 - down      俯卧
-    2 - left_log  左侧卧（硬板，log 为硬板缩写）
-    3 - right_log 右侧卧（硬板，log 为硬板缩写）
-    4 - left      左侧卧
-    5 - right     右侧卧
+输入数据：形状为 (batch, in_channels, seq_len) 的一维时序信号。
+
+──────────────────────────────────────────────────────────────────────────────
+任务一：睡眠体位分类（原始用途）
+    in_channels = 4  （多路鼾声/呼吸传感器）
+    classes     = 6
+    标签：0-up 仰卧  1-down 俯卧  2-left_log 左侧卧(硬板)
+          3-right_log 右侧卧(硬板)  4-left 左侧卧  5-right 右侧卧
+
+──────────────────────────────────────────────────────────────────────────────
+任务二：OSA 严重程度四分类（新增用途）
+    in_channels = 4  （4 路 PSG 信号，见下）
+    classes     = 4
+    标签：0-正常 (AHI<5)  1-轻度OSA (5≤AHI<15)
+          2-中度OSA (15≤AHI<30)  3-重度OSA (AHI≥30)
+
+    PSG 通道布局（index → 信号）：
+        0 - 鼾声/呼吸音频  Snoring / respiratory audio   (500 Hz)
+        1 - 血氧饱和度 SpO₂  Blood oxygen saturation      (重采样至 500 Hz)
+        2 - 口鼻气流        Nasal / oral airflow           (重采样至 500 Hz)
+        3 - 胸部呼吸运动    Thoracic respiratory effort    (重采样至 500 Hz)
+
+    需要修改的参数（相对于体位分类任务）：
+        classes:  6  →  4   （分类数由体位6类改为严重程度4类）
+        dropout:  建议 0.5   （医疗数据量有限，Dropout 有助于防止过拟合）
+──────────────────────────────────────────────────────────────────────────────
 """
 import torch
-# 数据输入的格式,m列，n行
+
 
 class Bottlrneck(torch.nn.Module):
     def __init__(self,In_channel,Med_channel,Out_channel,downsample=False):
@@ -46,7 +64,20 @@ class Bottlrneck(torch.nn.Module):
 
 
 class ResNet50(torch.nn.Module):
-    def __init__(self,in_channels,classes):
+    def __init__(self, in_channels, classes, dropout=0.0):
+        """
+        Args:
+            in_channels (int): 输入信号通道数。
+                体位分类任务: 4（多路传感器）
+                OSA 严重程度任务: 4（鼾声 + SpO₂ + 口鼻气流 + 胸部呼吸运动）
+            classes (int): 输出分类数。
+                体位分类任务: 6
+                OSA 严重程度任务: 4
+            dropout (float): 分类头中 Dropout 的丢弃概率，默认 0.0（不丢弃）。
+                体位分类任务保持默认 0.0 以与原始行为兼容。
+                OSA 任务建议设为 0.5：医疗数据量通常有限，Dropout 有助于防止过拟合。
+                示例：ResNet50(in_channels=4, classes=4, dropout=0.5)
+        """
         super(ResNet50, self).__init__()
         self.features = torch.nn.Sequential(
             torch.nn.Conv1d(in_channels,64,kernel_size=7,stride=2,padding=3),
@@ -74,23 +105,28 @@ class ResNet50(torch.nn.Module):
 
             torch.nn.AdaptiveAvgPool1d(1)
         )
+        # 分类头：加入 Dropout，防止在医疗数据（样本量有限）上过拟合
         self.classifer = torch.nn.Sequential(
-            torch.nn.Linear(2048,classes)
+            torch.nn.Dropout(p=dropout),
+            torch.nn.Linear(2048, classes)
         )
 
     def forward(self,x):
         x = self.features(x)
-        x = x.view(-1,2048)
+        x = x.view(x.size(0), -1)  # (batch, 2048)
         x = self.classifer(x)
         return x
 
 if __name__ == '__main__':
-    x = torch.randn(size=(1,256,4))
-    # x = torch.randn(size=(1,64,224))
-    # model = Bottlrneck(64,64,256,True)
-    model = ResNet50(in_channels=4,classes=6)
+    # 输入形状：(batch, in_channels, seq_len)
+    # in_channels 在前（PyTorch Conv1d 约定），seq_len 在后
 
-    output = model(x)
-    print(output.shape)
+    # ── 任务一：睡眠体位分类 ─────────────────────────────────────────────────
+    x = torch.randn(size=(2, 4, 30000))          # batch=2, 4通道, 30000采样点
+    model = ResNet50(in_channels=4, classes=6)   # 6种体位，默认 dropout=0.0（不丢弃）
+    print('体位分类输出形状:', model(x).shape)   # → (2, 6)
 
-
+    # ── 任务二：OSA 严重程度四分类 ──────────────────────────────────────────
+    # 修改点：classes 由 6 改为 4；显式传入 dropout=0.5 防止过拟合
+    model_osa = ResNet50(in_channels=4, classes=4, dropout=0.5)
+    print('OSA分级输出形状:', model_osa(x).shape)  # → (2, 4)
