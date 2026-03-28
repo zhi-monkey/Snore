@@ -1,3 +1,15 @@
+"""
+ResNet50 (1D) — 睡眠体位分类模型
+
+输入数据：患者的鼾声/呼吸音频一维时序信号，形状为 (batch, in_channels, seq_len)。
+预测任务：多分类，将输入信号分类为 6 种睡眠体位：
+    0 - up        仰卧
+    1 - down      俯卧
+    2 - left_log  左侧卧（硬板，log 为硬板缩写）
+    3 - right_log 右侧卧（硬板，log 为硬板缩写）
+    4 - left      左侧卧
+    5 - right     右侧卧
+"""
 import torch
 # 数据输入的格式,m列，n行
 
