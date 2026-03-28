@@ -1,16 +1,10 @@
 """
-训练脚本：基于多通道 PSG 信号对 OSA 严重程度进行四分类。
+训练脚本：基于单通道鼾声/呼吸音频信号对 OSA 严重程度进行四分类。
 
 ──────────────────────────────────────────────────────
 模型：ResNet50（一维卷积版本）
-  in_channels = 4   （4个PSG通道）
+  in_channels = 1   （单通道鼾声/呼吸音频，500 Hz）
   classes     = 4   （正常、轻度OSA、中度OSA、重度OSA）
-
-PSG 输入通道：
-  0 - 鼾声/呼吸音频  (500 Hz)
-  1 - 血氧饱和度 SpO2
-  2 - 口鼻气流
-  3 - 胸部呼吸运动
 
 预测类别（OSA 严重程度）：
   0 - 正常    (AHI < 5)
@@ -42,7 +36,7 @@ from models.ResNet50 import ResNet50
 # ── OSA 严重程度标签 ──────────────────────────────────────────────────────────
 CLASS_NAMES = SEVERITY_LABELS          # ['正常', '轻度OSA', '中度OSA', '重度OSA']
 NUM_CLASSES  = len(CLASS_NAMES)        # 4
-IN_CHANNELS  = 4                       # PSG 通道数
+IN_CHANNELS  = 1                       # 单通道鼾声/呼吸音频
 
 
 # ── 早停 ──────────────────────────────────────────────────────────────────────
@@ -131,8 +125,8 @@ def main():
     valid_loader = DataLoader(valid_data, batch_size=batch_size, shuffle=False, num_workers=nw)
 
     # ── 模型 ──────────────────────────────────────────────────────────────────
-    # 修改点：in_channels=4（PSG 通道数），classes=4（OSA 严重程度），
-    #          dropout=0.5 防止在有限医疗数据上过拟合
+    # in_channels=1（单通道鼾声/呼吸音频），classes=4（OSA 严重程度），
+    # dropout=0.5 防止在有限医疗数据上过拟合
     net = ResNet50(in_channels=IN_CHANNELS, classes=NUM_CLASSES, dropout=0.5).to(device)
     net_name    = net.__class__.__name__
     folder_name = 'osa_severity/' + net_name

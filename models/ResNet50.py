@@ -11,21 +11,16 @@ ResNet50 (1D) — 一维残差网络，支持睡眠体位分类与 OSA 严重程
           3-right_log 右侧卧(硬板)  4-left 左侧卧  5-right 右侧卧
 
 ──────────────────────────────────────────────────────────────────────────────
-任务二：OSA 严重程度四分类（新增用途）
-    in_channels = 4  （4 路 PSG 信号，见下）
+任务二：OSA 严重程度四分类
+    in_channels = 1  （单通道鼾声/呼吸音频，500 Hz）
     classes     = 4
     标签：0-正常 (AHI<5)  1-轻度OSA (5≤AHI<15)
           2-中度OSA (15≤AHI<30)  3-重度OSA (AHI≥30)
 
-    PSG 通道布局（index → 信号）：
-        0 - 鼾声/呼吸音频  Snoring / respiratory audio   (500 Hz)
-        1 - 血氧饱和度 SpO₂  Blood oxygen saturation      (重采样至 500 Hz)
-        2 - 口鼻气流        Nasal / oral airflow           (重采样至 500 Hz)
-        3 - 胸部呼吸运动    Thoracic respiratory effort    (重采样至 500 Hz)
-
     需要修改的参数（相对于体位分类任务）：
-        classes:  6  →  4   （分类数由体位6类改为严重程度4类）
-        dropout:  建议 0.5   （医疗数据量有限，Dropout 有助于防止过拟合）
+        in_channels: 4  →  1   （单通道鼾声/呼吸信号）
+        classes:     6  →  4   （分类数由体位6类改为严重程度4类）
+        dropout:  建议 0.5      （医疗数据量有限，Dropout 有助于防止过拟合）
 ──────────────────────────────────────────────────────────────────────────────
 """
 import torch
@@ -69,14 +64,14 @@ class ResNet50(torch.nn.Module):
         Args:
             in_channels (int): 输入信号通道数。
                 体位分类任务: 4（多路传感器）
-                OSA 严重程度任务: 4（鼾声 + SpO₂ + 口鼻气流 + 胸部呼吸运动）
+                OSA 严重程度任务: 1（单通道鼾声/呼吸音频，500 Hz）
             classes (int): 输出分类数。
                 体位分类任务: 6
                 OSA 严重程度任务: 4
             dropout (float): 分类头中 Dropout 的丢弃概率，默认 0.0（不丢弃）。
                 体位分类任务保持默认 0.0 以与原始行为兼容。
                 OSA 任务建议设为 0.5：医疗数据量通常有限，Dropout 有助于防止过拟合。
-                示例：ResNet50(in_channels=4, classes=4, dropout=0.5)
+                示例：ResNet50(in_channels=1, classes=4, dropout=0.5)
         """
         super(ResNet50, self).__init__()
         self.features = torch.nn.Sequential(
@@ -127,6 +122,8 @@ if __name__ == '__main__':
     print('体位分类输出形状:', model(x).shape)   # → (2, 6)
 
     # ── 任务二：OSA 严重程度四分类 ──────────────────────────────────────────
-    # 修改点：classes 由 6 改为 4；显式传入 dropout=0.5 防止过拟合
-    model_osa = ResNet50(in_channels=4, classes=4, dropout=0.5)
-    print('OSA分级输出形状:', model_osa(x).shape)  # → (2, 4)
+    # 修改点：in_channels 由 4 改为 1（单通道鼾声/呼吸信号）
+    #          classes  由 6 改为 4；显式传入 dropout=0.5 防止过拟合
+    x_osa = torch.randn(size=(2, 1, 30000))      # batch=2, 单通道, 30000采样点
+    model_osa = ResNet50(in_channels=1, classes=4, dropout=0.5)
+    print('OSA分级输出形状:', model_osa(x_osa).shape)  # → (2, 4)
