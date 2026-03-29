@@ -10,7 +10,7 @@
       </div>
       <div>
         <div class="logo-name">SnoringCare</div>
-        <div class="logo-sub">Sleep Health System</div>
+        <div class="logo-sub">睡眠健康管理系统</div>
       </div>
     </div>
 
@@ -19,12 +19,12 @@
       <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
       </svg>
-      <input type="text" placeholder="Search patients..." v-model="searchQuery" />
+  <input type="text" placeholder="搜索..." v-model="searchQuery" />
     </div>
 
     <!-- Navigation -->
     <nav class="sidebar-nav">
-      <div class="nav-section-label">MAIN MENU</div>
+  <div class="nav-section-label">主菜单</div>
       <component
         v-for="item in mainNav"
         :key="item.path"
@@ -39,7 +39,7 @@
         <span v-if="item.badge" class="nav-badge">{{ item.badge }}</span>
       </component>
 
-      <div class="nav-section-label" style="margin-top:16px">SYSTEM</div>
+  <div class="nav-section-label" style="margin-top:16px">系统</div>
       <div class="nav-item nav-settings">
         <span class="nav-icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -47,7 +47,7 @@
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
           </svg>
         </span>
-        <span class="nav-label">Settings</span>
+  <span class="nav-label">设置</span>
       </div>
     </nav>
 
@@ -56,7 +56,7 @@
       <div class="user-card">
         <div class="user-avatar">王</div>
         <div class="user-meta">
-          <div class="user-name">Dr. 王明</div>
+          <div class="user-name">王明医生</div>
           <div class="user-role">主治医师</div>
         </div>
         <svg class="user-more" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -75,7 +75,7 @@ const searchQuery = ref('')
 const mainNav = [
   {
     path: '/',
-    label: 'Dashboard',
+    label: '数据看板',
     badge: null,
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
@@ -84,7 +84,7 @@ const mainNav = [
   },
   {
     path: '/records',
-    label: 'Patients',
+    label: '患者管理',
     badge: '6',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -95,7 +95,7 @@ const mainNav = [
   },
   {
     path: '/upload',
-    label: 'Sleep Records',
+    label: '睡眠检测',
     badge: null,
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
@@ -103,7 +103,7 @@ const mainNav = [
   },
   {
     path: '/reports',
-    label: 'Report',
+    label: '检测报告',
     badge: '3',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -115,7 +115,7 @@ const mainNav = [
   },
   {
     path: '/search',
-    label: 'Health Search',
+    label: '健康搜索',
     badge: null,
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>

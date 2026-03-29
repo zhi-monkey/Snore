@@ -85,7 +85,7 @@ interface KnowledgeItem { id: number; title: string; category: string; icon: str
 
 const KNOWLEDGE_BASE: KnowledgeItem[] = [
   {
-    id:1, title:'阻塞性睡眠呼吸暂停低通气综合征（OSAHS）',
+  id:1, title:'阻塞性睡眠呼吸暂停低通气综合征',
     category:'疾病百科', icon:'🫁',
     summary:'一种以睡眠中反复发生的上气道塌陷为特征的睡眠呼吸疾病，可导致间歇性低氧血症。',
     content:`阻塞性睡眠呼吸暂停（OSA）是最常见的睡眠呼吸障碍，以睡眠期间上气道部分或完全塌陷为特征。主要症状包括：大声打鼾、夜间窒息/喘气、日间嗜睡、晨起头痛、注意力难以集中等。`,

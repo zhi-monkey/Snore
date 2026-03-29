@@ -22,18 +22,18 @@
       <div class="topbar-divider"></div>
 
       <!-- PDF Export -->
-      <button class="topbar-action-btn pdf-btn" title="Export PDF" @click="exportPdf">
+  <button class="topbar-action-btn pdf-btn" title="导出报告" @click="exportPdf">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
           <polyline points="14 2 14 8 20 8"/>
           <line x1="12" y1="18" x2="12" y2="12"/>
           <polyline points="9 15 12 18 15 15"/>
         </svg>
-        <span>Export PDF</span>
+        <span>导出报告</span>
       </button>
 
       <!-- Settings -->
-      <button class="topbar-icon-btn" title="Settings">
+      <button class="topbar-icon-btn" title="设置">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="3"/>
           <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -41,7 +41,7 @@
       </button>
 
       <!-- Notifications -->
-      <button class="topbar-icon-btn notif-btn" title="Notifications">
+  <button class="topbar-icon-btn notif-btn" title="通知">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
           <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -53,7 +53,7 @@
       <div class="topbar-user">
         <div class="topbar-avatar">王</div>
         <div class="topbar-user-info">
-          <div class="topbar-user-name">Dr. 王明</div>
+          <div class="topbar-user-name">王明医生</div>
           <div class="topbar-user-date">{{ dateStr }}</div>
         </div>
       </div>
@@ -67,9 +67,9 @@ import { ref } from 'vue'
 defineProps<{ title: string; subtitle?: string }>()
 
 const ranges = [
-  { label: 'Last Night', value: 'night' },
-  { label: 'Last Week',  value: 'week' },
-  { label: 'Last Month', value: 'month' },
+  { label: '最近一晚', value: 'night' },
+  { label: '最近一周',  value: 'week' },
+  { label: '最近一月', value: 'month' },
 ]
 const activeRange = ref('night')
 
@@ -78,10 +78,9 @@ const dateStr = now.toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric',
 })
 
-// TODO: integrate a PDF generation library (e.g. jsPDF or server-side) to replace this placeholder
 function exportPdf () {
-  console.warn('[PDF Export] PDF generation is not yet implemented.')
-  window.print()
+  console.warn('[导出报告] 当前使用浏览器打印作为占位实现。')
+  globalThis.print()
 }
 </script>
 

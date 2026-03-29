@@ -1,6 +1,6 @@
 <template>
   <div>
-    <TopBar title="Sleep Apnea Dashboard" subtitle="睡眠呼吸检测管理后台" />
+  <TopBar title="睡眠呼吸监测仪表盘" subtitle="睡眠呼吸检测管理后台" />
 
     <div class="dashboard">
 
